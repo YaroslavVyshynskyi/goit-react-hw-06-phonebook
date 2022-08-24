@@ -1,33 +1,18 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { nanoid } from 'nanoid';
+import { useSelector, useDispatch } from "react-redux";
 import ContactForm from "./ContactForm/ContactForm";
 import ContactList from "./ContactList/ContactList";
 import Filter from "./Filter/Filter";
-
+import { addContact, deleteContact as deleteContactAction,changeFilter as changeFilterAction } from "slice/contactsSlice";
 
 const App = () => {
-  
-  // {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
-  // {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
-  // {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-  // {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'}
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState("");
-  
-  useEffect(() => {
-    const contacts = localStorage.getItem("contacts");
-    const parsedContacts = JSON.parse(contacts);
-    
-    if (parsedContacts) {
-      setContacts(parsedContacts );
-    }
-  }, []);
-
+  const {items: contacts, filter } = useSelector(store => { return store.contacts });
+  const dispatch = useDispatch();
+ 
   useEffect(() => {
     localStorage.setItem("contacts", JSON.stringify(contacts));
   }, [contacts]);
-
-
 
   const handleAddContact = data => {
     const existingContactsNames = contacts.map(({ name }) => name.toLowerCase());
@@ -42,13 +27,11 @@ const App = () => {
       id: nanoid()
     };
     
-    setContacts(( contacts ) => 
-      [contact, ...contacts]
-    );
+    dispatch(addContact(contact))
   };
 
   const changeFilter = e => {
-    setFilter(e.currentTarget.value);
+    dispatch(changeFilterAction(e.target.value))
   };
   
   const getVisibleContacts = () => { 
@@ -59,11 +42,8 @@ const App = () => {
   }
 
   const deleteContact = (deleteId) => {
-    setContacts(( contacts ) => 
-      contacts.filter((contact) => {return contact.id !== deleteId}),
-    );
+    dispatch(deleteContactAction(deleteId));
   };
-  
   
   const visibleContacts = getVisibleContacts();
   const containerStyles = {
