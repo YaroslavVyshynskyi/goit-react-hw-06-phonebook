@@ -9,8 +9,8 @@ const Filter = () => {
     const dispatch = useDispatch();
 
     const onChange = e => {
-    dispatch(changeFilterAction(e.target.value))
-  };
+        dispatch(changeFilterAction(e.target.value))
+    };
 
     return (
         <label>
